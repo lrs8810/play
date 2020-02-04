@@ -23,7 +23,7 @@ module.exports = {
   },
   production: {
     client: 'pg',
-    connection: `${process.env.PROD_DB}`,
+    connection: process.env.PROD_DB,
     migrations: {
       directory: './db/migrations'
     },
