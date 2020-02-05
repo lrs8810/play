@@ -22,9 +22,8 @@ describe('Test the favorite path', () => {
   afterEach(() => {
     database.raw('truncate table papers cascade');
   });
-
   describe('test favorite GET', () => {
-    it('happy path', async () => {
+    xit('happy path', async () => {
       const res = await request(app)
         .get("/api/v1/papers");
 
