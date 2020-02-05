@@ -39,3 +39,12 @@ describe('Test the favorites endpoints', () => {
         expect(res.body).toHaveProperty("rating");
         expect(res.body.rating).toBe(88);
     });
+
+    it('sad path, will return 404 if favorite is not found', async () => {
+      const res = await request(app)
+        .get("/api/v1/favorites/30")
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty("error");
+        expect(res.body.error).toBe("Could not find favorite with id 30");
+    });
+    
