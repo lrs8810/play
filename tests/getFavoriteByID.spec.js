@@ -48,3 +48,11 @@ describe('Test the favorites endpoints', () => {
         expect(res.body.error).toBe("Could not find favorite with id 30");
     });
     
+    it('sad path, will return 500 if :id is anything other than an integer', async () => {
+      const res = await request(app)
+        .get("/api/v1/favorites/start")
+        expect(res.statusCode).toEqual(500);
+        expect(res.body).toHaveProperty("error");
+    });
+  })
+})
