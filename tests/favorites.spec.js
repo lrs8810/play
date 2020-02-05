@@ -53,7 +53,7 @@ describe('Test the favorites endpoints', () => {
         expect(res.body).toHaveProperty("rating");
         expect(res.body.rating).toBe(88);
     });
-    
+
     it('sad path, musixmatch does not return an integer rating', async () => {
       await fetch.mockResponseOnce(
         JSON.stringify({
@@ -84,7 +84,96 @@ describe('Test the favorites endpoints', () => {
       expect(fetch.mock.calls.length).toEqual(1);
       expect(res.statusCode).toBe(503);
       expect(res.body).toHaveProperty('error')
-      expect(res.body.error).toBe("Musixmatch returned a rating that was not an integer");
+      expect(res.body.error).toBe("Musixmatch returned a rating that was not an accepted integer");
+    });
+
+    it('sad path, will return 422 error if property is not sent in request', async () => {
+      await fetch.mockResponseOnce(
+        JSON.stringify({
+          message: {
+            body: {
+              track: {
+                artist_name: "Queen",
+                track_name: "We Will Rock You",
+                track_rating: "this song is great",
+                primary_genres: {
+                  music_genre_list: [{
+                    music_genre: {
+                      music_genre_name: "Awesome Rock"
+                    }
+                  }]
+                }
+              }
+            }
+          }
+        })
+      );
+      const res = await request(app)
+        .post("/api/v1/favorites")
+        .send({
+          artistName: "Queen" }
+      );
+      expect(res.statusCode).toBe(422);
+      expect(res.body).toHaveProperty('error')
+      expect(res.body.error).toBe(`Expected format: { artistName: <String>, title: <String> }. You're missing a \"title\" property.`);
+    });
+
+    it('sad path, will return 400 error if favorite is not created', async () => {
+      await fetch.mockResponseOnce(
+        JSON.stringify({
+          message: {
+          header: {
+              status_code: 404,
+              execute_time: 0.25364995002747,
+              mode: "search",
+              cached: 0
+          },
+          body: ""
+          }
+        })
+      );
+      const res = await request(app)
+        .post("/api/v1/favorites")
+        .send({
+          title: "ABCDEFG",
+          artistName: "Queen" }
+      );
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty('error')
+      expect(res.body.error).toBe("Favorite cannot be created");
+    });
+
+    it('sad path, musixmatch does not return an integer rating greater than 100', async () => {
+      await fetch.mockResponseOnce(
+        JSON.stringify({
+          message: {
+            body: {
+              track: {
+                artist_name: "Queen",
+                track_name: "We Will Rock You",
+                track_rating: 200,
+                primary_genres: {
+                  music_genre_list: [{
+                    music_genre: {
+                      music_genre_name: "Awesome Rock"
+                    }
+                  }]
+                }
+              }
+            }
+          }
+        })
+      );
+      const res = await request(app)
+        .post("/api/v1/favorites")
+        .send({
+          title: "We Will Rock You",
+          artistName: "Queen" }
+      );
+      expect(fetch.mock.calls.length).toEqual(1);
+      expect(res.statusCode).toBe(503);
+      expect(res.body).toHaveProperty('error')
+      expect(res.body.error).toBe("Musixmatch returned a rating that was not an accepted integer");
     });
   })
 });

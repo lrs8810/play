@@ -24,25 +24,21 @@ router.post('/', (request, response) => {
   var artist = request.body.artistName.toLowerCase();
   fetch(`http://api.musixmatch.com/ws/1.1/matcher.track.get?q_artist=${artist}&q_track= ${title}&apikey=${process.env.MUSIXMATCH_API_KEY}`)
     .then(response => response.json())
-    .catch(error => {
-      console.log(error)
-    })
     .then(json => {
       let favJson = json.message.body.track
-        if (isNaN(favJson.track_rating) || (favJson.track_rating < 1) || (favJson.track_rating > 100 )) {
-          response.status(503).json({error: "Musixmatch returned a rating that was not an integer"})
-        } else {
-            const newFavorite = new Favorite(favJson)
-              database('favorites').insert({artistName: newFavorite.artist, title: newFavorite.title, rating: newFavorite.rating, genre: newFavorite.genre}, 'id')
-                .then(favId => {
-                  let finalResponse = newFavorite.favoriteResponse(favId[0])
-                  response.status(201).json(finalResponse)
-                })
-                // .catch(error => {
-                //   response.status(400).json("Favorite is not created.")
-                // })
-          }
-    });
+      if (json.message.body === "") {
+        response.status(400).json({error: "Favorite cannot be created"})
+      } else if (isNaN(favJson.track_rating) || (favJson.track_rating < 1) || (favJson.track_rating > 100 )) {
+          response.status(503).json({error: "Musixmatch returned a rating that was not an accepted integer"})
+      } else {
+          const newFavorite = new Favorite(favJson)
+            database('favorites').insert({artistName: newFavorite.artist, title: newFavorite.title, rating: newFavorite.rating, genre: newFavorite.genre}, 'id')
+              .then(favId => {
+                let finalResponse = newFavorite.favoriteResponse(favId[0])
+                response.status(201).json(finalResponse)
+              })
+            }
+      });
 });
 
 module.exports = router;
