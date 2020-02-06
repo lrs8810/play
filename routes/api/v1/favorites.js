@@ -48,5 +48,40 @@ router.get('/', (request, response) => {
     }).catch(error => response.status(404).json({error: error}))
 })
 
+router.get('/:id', (request, response) => {
+  let id = request.params.id
+  database('favorites').where('id', id)
+  .select('id', 'title', 'artistName', 'genre', 'rating')
+  .then(favorite => {
+    if (favorite.length) {
+      response.status(200).json(favorite[0]);
+    } else {
+      response.status(404).json({
+        error: `Could not find favorite with id ${id}`
+      });
+    }
+  })
+  .catch(error => {
+    response.status(500).json({ error });
+  });
+})
+
+router.delete('/:id', (request, response) => {
+  let id = request.params.id
+  database('favorites').where('id', id).del()
+  .then(favorite => {
+    if (favorite > 0) {
+      response.status(204).send();
+    } else {
+      response.status(404).json({
+        error: `Could not find favorite with id ${id}`
+      });
+    }
+  })
+  .catch(error => {
+    response.status(500).json({ error });
+  });
+})
+
 
 module.exports = router;
