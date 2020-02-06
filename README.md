@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Play is an Express API which allows existing users with a validated api key to hit four endpoints. Those endpoints include adding favorite songs, listing all favorited songs, finding a specific favorite and deleting a favorited song.
+Play is an Express API which allows users to hit four endpoints. Those endpoints include adding favorite songs, listing all favorited songs, finding a specific favorite and deleting a favorited song.
 
 ## Getting Started
 
