@@ -21,6 +21,11 @@ Once you have your database setup, you’ll need to run some migrations. You can
 
 `knex migrate:latest`
 
+#### Seeds
+Once you have your migrations setup, you'll need to seed your database. You can do this by running the following command:
+
+`knex seed:run`
+
 #### API Keys
 
 To get started with the API calls you will need an API key for both [Musixmatch API](https://developer.musixmatch.com/).
