@@ -41,4 +41,17 @@ router.post('/', (request, response) => {
       });
 });
 
+router.get('/', (request, response) => {
+  database('favorites').select()
+    .then(favorites => {
+      if (favorites.length > 0) {
+        const newFavorites = formatFavorites(favorites)
+        response.status(200).json(favorites)
+      } else {
+        response.status(204).json({error: "No content"});
+      }
+    }).catch(error => response.status(404).json({error: error}))
+})
+
+
 module.exports = router;
