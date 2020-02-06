@@ -21,7 +21,7 @@ describe('Test the favorites endpoints', () => {
   });
 
   afterEach(() => {
-    database.raw('truncate table papers cascade');
+    database.raw('truncate table favorites cascade');
   });
 
   describe('DELETE /api/v1/favorites/:id', () => {
