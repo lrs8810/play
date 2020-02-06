@@ -7,27 +7,27 @@ const configuration = require('../knexfile')[environment];
 const database = require('knex')(configuration);
 
 describe('Test the get favorites endpoint', () => {
+  beforeEach(async () => {
+    await database.raw('truncate table favorites cascade')
+  });
   afterEach(async () => {
     await database.raw('truncate table favorites cascade');
   });
   describe('GET /api/v1/favorites', () => {
    it('happy path', async () => {
      let favorite_1 = {
-       id: 1,
        title: 'We Will Rock You',
        artistName: 'Queen',
        genre: 'Awesome Rock',
        rating: 88
      };
      let favorite_2 = {
-       id: 3,
        title: 'You Shook Me All Night Long',
        artistName: 'ACDC',
        genre: 'Awesome Rock',
        rating: 75
      };
      let favorite_3 = {
-       id: 5,
        title: 'Bohemian Rhapsody',
        artistName: 'Queen',
        genre: 'Rock',
@@ -57,7 +57,7 @@ describe('Test the get favorites endpoint', () => {
     it('will return 200 if no favorites', async () => {
      const res = await request(app)
        .get("/api/v1/favorites")
-       
+
        expect(res.statusCode).toEqual(200);
        expect(res.body.length).toEqual(0);
     });
