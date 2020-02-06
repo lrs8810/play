@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 
 const Favorite = require('../../../pojos/favorite');
-const formatFavorites = require('../../../helpers/favorites')
 const fetch = require('node-fetch');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../../../knexfile')[environment];
@@ -43,14 +42,9 @@ router.post('/', (request, response) => {
 });
 
 router.get('/', (request, response) => {
-  database('favorites').select()
+  database('favorites').select("id", "title", "artistName", "genre", "rating")
     .then(favorites => {
-      if (favorites.length > 0) {
-        const newFavorites = formatFavorites(favorites)
-        response.status(200).json(favorites)
-      } else {
-        response.status(204).json({error: "No content"});
-      }
+      response.status(200).json(favorites)
     }).catch(error => response.status(404).json({error: error}))
 })
 
