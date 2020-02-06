@@ -30,3 +30,12 @@ describe('Test the favorites endpoints', () => {
         .delete("/api/v1/favorites/1")
         expect(res.statusCode).toEqual(204);
     });
+
+    it('sad path, will return 404 if favorite is not found', async () => {
+      const res = await request(app)
+        .delete("/api/v1/favorites/30")
+        expect(res.statusCode).toEqual(404);
+        expect(res.body).toHaveProperty("error");
+        expect(res.body.error).toBe("Could not find favorite with id 30");
+    });
+
