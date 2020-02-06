@@ -41,6 +41,13 @@ router.post('/', (request, response) => {
       });
 });
 
+router.get('/', (request, response) => {
+  database('favorites').select("id", "title", "artistName", "genre", "rating")
+    .then(favorites => {
+      response.status(200).json(favorites)
+    }).catch(error => response.status(404).json({error: error}))
+})
+
 router.get('/:id', (request, response) => {
   let id = request.params.id
   database('favorites').where('id', id)
@@ -75,5 +82,6 @@ router.delete('/:id', (request, response) => {
     response.status(500).json({ error });
   });
 })
+
 
 module.exports = router;
