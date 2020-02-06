@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const Favorite = require('../../../pojos/favorite');
+const formatFavorites = require('../../../helpers/favorites')
 const fetch = require('node-fetch');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../../../knexfile')[environment];
