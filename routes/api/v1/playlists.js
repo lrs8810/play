@@ -6,6 +6,13 @@ const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../../../knexfile')[environment];
 const database = require('knex')(configuration);
 
+
+router.get('/', (request, response) => {
+  database('playlists').select()
+    .then(playlists => {
+      response.status(200).json(playlists)
+    }).catch(error => response.status(404).json({error: error}))
+
 router.post('/', (request, response) => {
   if (request.body.title) {
     database('playlists').insert({title: request.body.title}, 'id')
@@ -19,6 +26,7 @@ router.post('/', (request, response) => {
     })
   } else
   response.status(422).json({error: 'Playlist not created, please enter a title.'})
+
 });
 
 module.exports = router;
