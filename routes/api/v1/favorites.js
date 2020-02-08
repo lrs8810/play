@@ -62,7 +62,8 @@ router.get('/:id', (request, response) => {
     }
   })
   .catch(error => {
-    response.status(500).json({ error });
+    console.log(error)
+    response.status(500).send();
   });
 })
 
@@ -79,7 +80,8 @@ router.delete('/:id', (request, response) => {
     }
   })
   .catch(error => {
-    response.status(500).json({ error });
+    console.log(error)
+    response.status(500).send();
   });
 })
 
