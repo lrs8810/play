@@ -33,22 +33,28 @@ router.put('/:id', (request, response) => {
   let id = request.params.id
   let title = request.body.title
 
-  database('playlists').where({id: id}).update({title: title})
-  .then(playlist => {
-    database('playlists').where('id', id)
-    .then(updatedPlaylist => {
-      response.status(200).json(updatedPlaylist[0])
-    })
-  })
-  .catch(error => {
-    response.status(404).json({
-      error: `Could not find playlist with id ${id}`
+  if (isNaN(id)) {
+    response.status(400).json({
+      error: "Please send a valid integer as the id parameter."
     });
-  })
-  .catch(error => {
-    console.log(error)
-    response.status(500).json({ error: "Please send a valid integer as an id parameter."});
-  });
+  } else {
+    database('playlists').where({id: id}).update({title: title})
+    .then(playlist => {
+      if (playlist === 1) {
+        database('playlists').where('id', id)
+        .then(updatedPlaylist => {
+          response.status(200).json(updatedPlaylist[0])
+        })
+        .catch(error => {
+          response.status(500).json({ error: "Could not update database"});
+        });
+      } else {
+        response.status(404).json({
+          error: `Could not find playlist with id ${id}`
+        });
+      }
+    })
+  }
 })
 
 router.delete('/:id', (request, response) => {
