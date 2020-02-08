@@ -106,7 +106,7 @@ describe('Test the get playlists endpoint', () => {
  });
 });
 
-describe('Test the deleteplaylist endpoint', () => {
+describe('Test the delete playlist endpoint', () => {
   beforeEach(async () => {
     await database.raw('truncate table playlists cascade');
 
@@ -190,3 +190,15 @@ describe('Test the update playlist endpoint', () => {
       expect(res.body.error).toBe("Could not find playlist with id 700");
     });
 
+    it('sad path, will return 400 if :id is anything other than an integer', async () => {
+      const res = await request(app)
+        .put("/api/v1/playlists/bob")
+        .send({
+          title: "Workout Jamz",
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Please send a valid integer as the id parameter.");
+    });
+});
