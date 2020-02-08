@@ -140,7 +140,6 @@ describe('Test the delete playlist endpoint', () => {
       const res = await request(app)
         .delete("/api/v1/playlists/start")
         expect(res.statusCode).toEqual(500);
-        expect(res.body).toHaveProperty("error");
     });
   });
 });
