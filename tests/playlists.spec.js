@@ -201,4 +201,15 @@ describe('Test the update playlist endpoint', () => {
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe("Please send a valid integer as the id parameter.");
     });
+
+    it('sad path, will return 422 if title is not sent in request', async () => {
+      const res = await request(app)
+        .put("/api/v1/playlists/4")
+        .send({})
+
+      expect(res.statusCode).toEqual(422);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Playlist not updated, please enter a title.");
+    });
+
 });
