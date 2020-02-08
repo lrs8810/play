@@ -12,6 +12,7 @@ router.get('/', (request, response) => {
     .then(playlists => {
       response.status(200).json(playlists)
     }).catch(error => response.status(404).json({error: error}))
+});
 
 router.post('/', (request, response) => {
   if (request.body.title) {
@@ -26,7 +27,23 @@ router.post('/', (request, response) => {
     })
   } else
   response.status(422).json({error: 'Playlist not created, please enter a title.'})
-
 });
+
+router.delete('/:id', (request, response) => {
+  let id = request.params.id
+  database('playlists').where('id', id).del()
+  .then(playlist => {
+    if (playlist > 0) {
+      response.status(204).send();
+    } else {
+      response.status(404).json({
+        error: `Could not find playlist with id ${id}`
+      });
+    }
+  })
+  .catch(error => {
+    response.status(500).json({ error });
+  });
+})
 
 module.exports = router;
