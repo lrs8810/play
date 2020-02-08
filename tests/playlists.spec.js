@@ -153,7 +153,11 @@ describe('Test the update playlist endpoint', () => {
       id: 4,
       title: 'Pump up Jamz'
     };
+    let playlist_2 = {
+      title: 'Study'
+    };
     await database('playlists').insert(playlist);
+    await database('playlists').insert(playlist_2);
   });
 
   afterEach(() => {
@@ -200,5 +204,27 @@ describe('Test the update playlist endpoint', () => {
       expect(res.statusCode).toEqual(400);
       expect(res.body).toHaveProperty("error");
       expect(res.body.error).toBe("Please send a valid integer as the id parameter.");
+    });
+
+    it('sad path, will return 422 if title is not sent in request', async () => {
+      const res = await request(app)
+        .put("/api/v1/playlists/4")
+        .send({})
+
+      expect(res.statusCode).toEqual(422);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Playlist not updated, please enter a title.");
+    });
+
+    it('sad path, will return 409 if title is not unique', async () => {
+      const res = await request(app)
+        .put("/api/v1/playlists/4")
+        .send({
+          title: "Study"
+        })
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Title must be unique!");
     });
 });
