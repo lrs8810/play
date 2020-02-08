@@ -37,6 +37,10 @@ router.put('/:id', (request, response) => {
     response.status(400).json({
       error: "Please send a valid integer as the id parameter."
     });
+  } else if (!title) {
+    response.status(422).json({
+      error: "Playlist not updated, please enter a title."
+    });
   } else {
     database('playlists').where({id: id}).update({title: title})
     .then(playlist => {
@@ -46,14 +50,18 @@ router.put('/:id', (request, response) => {
           response.status(200).json(updatedPlaylist[0])
         })
         .catch(error => {
-          response.status(500).json({ error: "Could not update database"});
-        });
+          console.log(error)
+          response.status(500).send()
+        })
       } else {
         response.status(404).json({
           error: `Could not find playlist with id ${id}`
         });
       }
     })
+    .catch(error => {
+      response.status(409).json({ error: "Title must be unique!"});
+    });
   }
 })
 
