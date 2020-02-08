@@ -29,6 +29,28 @@ router.post('/', (request, response) => {
   response.status(422).json({error: 'Playlist not created, please enter a title.'})
 });
 
+router.put('/:id', (request, response) => {
+  let id = request.params.id
+  let title = request.body.title
+
+  database('playlists').where({id: id}).update({title: title})
+  .then(playlist => {
+    database('playlists').where('id', id)
+    .then(updatedPlaylist => {
+      response.status(200).json(updatedPlaylist[0])
+    })
+  })
+  .catch(error => {
+    response.status(404).json({
+      error: `Could not find playlist with id ${id}`
+    });
+  })
+  .catch(error => {
+    console.log(error)
+    response.status(500).json({ error: "Please send a valid integer as an id parameter."});
+  });
+})
+
 router.delete('/:id', (request, response) => {
   let id = request.params.id
   database('playlists').where('id', id).del()
@@ -45,5 +67,6 @@ router.delete('/:id', (request, response) => {
     response.status(500).json({ error });
   });
 })
+
 
 module.exports = router;

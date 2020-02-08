@@ -144,3 +144,36 @@ describe('Test the deleteplaylist endpoint', () => {
     });
   });
 });
+
+describe('Test the update playlist endpoint', () => {
+  beforeEach(async () => {
+    await database.raw('truncate table playlists cascade');
+
+    let playlist = {
+      id: 4,
+      title: 'Pump up Jamz'
+    };
+    await database('playlists').insert(playlist);
+  });
+
+  afterEach(() => {
+    database.raw('truncate table playlists cascade');
+  });
+
+  describe('PUT /api/v1/playlists/:id', () => {
+    it('happy path', async () => {
+      const res = await request(app)
+        .put("/api/v1/playlists/4")
+        .send({
+          title: "Workout Jamz",
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("id");
+      expect(res.body.id).toBe(4);
+      expect(res.body).toHaveProperty("title");
+      expect(res.body.title).toBe("Workout Jamz");
+      expect(res.body).toHaveProperty("createdAt");
+      expect(res.body).toHaveProperty("updatedAt");
+    });
+  });
