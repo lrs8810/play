@@ -177,3 +177,16 @@ describe('Test the update playlist endpoint', () => {
       expect(res.body).toHaveProperty("updatedAt");
     });
   });
+
+    it('sad path, will return 404 if playlist is not found', async () => {
+      const res = await request(app)
+        .put("/api/v1/playlists/700")
+        .send({
+          title: "Workout Jamz",
+        });
+
+      expect(res.statusCode).toEqual(404);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Could not find playlist with id 700");
+    });
+
