@@ -282,7 +282,6 @@ describe('Test the get specific favorite endpoint', () => {
       const res = await request(app)
         .get("/api/v1/favorites/start")
         expect(res.statusCode).toEqual(500);
-        expect(res.body).toHaveProperty("error");
     });
   });
 });
@@ -324,7 +323,6 @@ describe('Test the delete favorite endpoint', () => {
       const res = await request(app)
         .delete("/api/v1/favorites/start")
         expect(res.statusCode).toEqual(500);
-        expect(res.body).toHaveProperty("error");
     });
   });
 });
