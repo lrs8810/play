@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router();
+var router = express.Router({mergeParams: true});
 
 const Favorite = require('../../../pojos/favorite');
 const fetch = require('node-fetch');
@@ -84,6 +84,16 @@ router.delete('/:id', (request, response) => {
     response.status(500).send();
   });
 })
+
+router.post('/:favoriteId', async (req, res) => {
+  var playlist = await database('playlists').where({id: req.params.playlistId}).first()
+  var favorite = await database('favorites').where({id: req.params.favoriteId}).first()
+
+  database('playlists_favorites').insert({playlist_id: req.params.playlistId, favorite_id: req.params.favoriteId}, "id")
+    .then(newFavorite => {
+      res.status(201).json({Success: `${favorite.title} has been added to ${playlist.title}!`})
+    });
+});
 
 
 module.exports = router;
