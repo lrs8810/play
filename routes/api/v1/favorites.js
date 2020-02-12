@@ -1,5 +1,5 @@
 var express = require('express');
-var router = express.Router();
+var router = express.Router({mergeParams: true});
 
 const Favorite = require('../../../pojos/favorite');
 const fetch = require('node-fetch');
@@ -83,6 +83,13 @@ router.delete('/:id', (request, response) => {
     console.log(error)
     response.status(500).send();
   });
+})
+
+router.post('/:favoriteId', function(req, res, next) {
+  let playlistId = req.playlistId;
+  let favoriteId = req.params.favoriteId;
+  console.log(favoriteId)
+  console.log(playlistId)
 })
 
 

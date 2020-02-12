@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+const favorites = require('./favorites')
 const fetch = require('node-fetch');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../../../knexfile')[environment];
@@ -82,6 +83,11 @@ router.delete('/:id', (request, response) => {
     response.status(500).send();
   });
 })
+
+router.use('/:playlistId/favorites', function(req, res, next) {
+  req.playlistId = req.params.playlistId;
+  next()
+}, favorites)
 
 
 module.exports = router;
