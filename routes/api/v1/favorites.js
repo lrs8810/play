@@ -85,12 +85,15 @@ router.delete('/:id', (request, response) => {
   });
 })
 
-router.post('/:favoriteId', function(req, res, next) {
-  let playlistId = req.playlistId;
-  let favoriteId = req.params.favoriteId;
-  console.log(favoriteId)
-  console.log(playlistId)
-})
+router.post('/:favoriteId', async (req, res) => {
+  var playlist = await database('playlists').where({id: req.params.playlistId}).first()
+  var favorite = await database('favorites').where({id: req.params.favoriteId}).first()
+
+  database('playlists_favorites').insert({playlist_id: req.params.playlistId, favorite_id: req.params.favoriteId}, "id")
+    .then(newFavorite => {
+      res.status(201).json({Success: `${favorite.title} has been added to ${playlist.title}!`})
+    });
+});
 
 
 module.exports = router;
