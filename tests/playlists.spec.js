@@ -60,49 +60,82 @@ describe('Test the add playlist endpoint', () => {
 
 describe('Test the get playlists endpoint', () => {
   beforeEach(async () => {
+    await database.raw('truncate table playlists_favorites cascade')
     await database.raw('truncate table playlists cascade')
+    await database.raw('truncate table favorites cascade')
   });
   afterEach(async () => {
+    await database.raw('truncate table playlists_favorites cascade');
     await database.raw('truncate table playlists cascade');
+    await database.raw('truncate table favorites cascade');
   });
 
   describe('GET /api/v1/playlists', () => {
    it('happy path', async () => {
      let playlist_1 = {
+       id: 10,
        title: 'Roadtrip!!!'
      };
      let playlist_2 = {
-       title: 'Study'
+       id: 20,
+       title: 'Study!!!'
      };
-     let playlist_3 = {
-       title: 'Lo-Fi'
-     };
+     let favorite_1 = {
+       id: 45,
+       title: "Bohemian Rhapsody",
+       artistName: "Queen",
+       genre: "Awesome Rock",
+       rating: 80
+     }
+     let favorite_2 = {
+       id: 49,
+       title: "You Shook Me All Night Long",
+       artistName: "ACDC",
+       genre: "Rock",
+       rating: 75
+     }
+     let playlistFavorite_1 = {
+       playlist_id: 10,
+       favorite_id: 45
+     }
+     let playlistFavorite_2 = {
+       playlist_id: 10,
+       favorite_id: 49
+     }
 
      await database('playlists').insert(playlist_1);
      await database('playlists').insert(playlist_2);
-     await database('playlists').insert(playlist_3);
+     await database('favorites').insert(favorite_1);
+     await database('favorites').insert(favorite_2);
+     await database('playlists_favorites').insert(playlistFavorite_1);
+     await database('playlists_favorites').insert(playlistFavorite_2);
 
      const res = await request(app)
        .get("/api/v1/playlists")
 
        expect(res.statusCode).toEqual(200);
-       expect(res.body.length).toEqual(3);
+       expect(res.body.length).toEqual(2);
        expect(res.body[0]).toHaveProperty("id");
        expect(res.body[0]).toHaveProperty("title");
+       expect(res.body[0]).toHaveProperty("songCount");
+       expect(res.body[0]).toHaveProperty("songAvgRating");
+       expect(res.body[0]).toHaveProperty("createdAt");
+       expect(res.body[0]).toHaveProperty("updatedAt");
        expect(res.body[0].title).toBe("Roadtrip!!!");
-       expect(res.body[2]).toHaveProperty("createdAt");
-       expect(res.body[2]).toHaveProperty("updatedAt");
-       expect(res.body[2].title).toBe("Lo-Fi");
-   })
-   describe('sad path for get playlists endpoint', () => {
-    it('will return 200 if no playlists', async () => {
-     const res = await request(app)
-       .get("/api/v1/playlists")
+       expect(res.body[0].songCount).toBe(2);
+       expect(res.body[0]).toHaveProperty("favorites");
+       expect(res.body[0].favorites.length).toEqual(2);
+       expect(res.body[0].favorites[0].title).toBe("Bohemian Rhapsody");
+       expect(res.body[0].favorites[0].artistName).toBe("Queen");
+       expect(res.body[0].favorites[0].genre).toBe("Awesome Rock");
+       expect(res.body[0].favorites[0].rating).toBe(80);
+       expect(res.body[0].favorites[1].title).toBe("You Shook Me All Night Long");
+       expect(res.body[0].favorites[1].artistName).toBe("ACDC");
+       expect(res.body[0].favorites[1].genre).toBe("Rock");
+       expect(res.body[0].favorites[1].rating).toBe(75);
+       expect(res.body[1].favorites.length).toEqual(0);
 
-       expect(res.statusCode).toEqual(200);
-       expect(res.body.length).toEqual(0);
-     });
-   });
+   })
  });
 });
 

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const favorites = require('./favorites')
+const calculateSongAvgRating = require('../../../helpers')
 const fetch = require('node-fetch');
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('../../../knexfile')[environment];
@@ -9,10 +10,29 @@ const database = require('knex')(configuration);
 
 
 router.get('/', (request, response) => {
-  database('playlists').select()
-    .then(playlists => {
-      response.status(200).json(playlists)
-    }).catch(error => response.status(404).json({error: error}))
+  return database('playlists').select()
+     .then(playlists => {
+         const promises = playlists.map( playlist => {
+             return database('playlists_favorites')
+                 .join('favorites', 'favorites.id', 'playlists_favorites.favorite_id')
+                 .select("favorites.id", "favorites.title", "favorites.artistName", "favorites.genre", "favorites.rating")
+                 .where('playlist_id', playlist.id)
+                 .then(favorites => {
+                   playlist.songAvgRating = calculateSongAvgRating(favorites)
+                   playlist.songCount = favorites.length
+                   playlist.favorites = favorites
+                   return playlist
+                 })
+         })
+         Promise.all(promises)
+          .then(result => {
+            response.status(200).json(result)
+          })
+      })
+      .catch(error => {
+        console.log(error)
+        response.status(500).send()
+      })
 });
 
 router.post('/', (request, response) => {
@@ -94,26 +114,18 @@ router.get('/:playlistId/favorites', (req, res) => {
                    .select("favorites.id", "favorites.title", "favorites.artistName", "favorites.genre", "favorites.rating")
                    .where('playlist_id', playlist.id)
                    .then(favorites => {
-                       playlist.favorites = favorites
-                       playlist.songCount = favorites.length
-                       return playlist
+                     playlist.songAvgRating = calculateSongAvgRating(favorites)
+                     playlist.songCount = favorites.length
+                     playlist.favorites = favorites
+                     return playlist
                    })
            })
            Promise.all(promises)
-           .then(result => {
-             database("playlists_favorites")
-               .join('favorites', 'favorites.id', 'playlists_favorites.favorite_id')
-               .where('playlist_id', playlistId)
-               .avg('favorites.rating as songAvgRating')
-               .groupBy('playlists_favorites.playlist_id')
-               .then(songRating => {
-                 var rating = parseFloat(songRating[0].songAvgRating)
-                 songRating[0].songAvgRating = rating
-                 result[0].songAvgRating = songRating[0].songAvgRating
-                 res.status(200).json(result[0])
-               })
-           })
-         });
+            .then(result => {
+              res.status(200).json(result[0])
+            })
+        })
+        .catch(error => res.status(404).json(error))
 })
 
 router.delete('/:playlistId/favorites/:favoriteId', (request, response) => {
@@ -152,7 +164,5 @@ router.use('/:playlistId/favorites', function(req, res, next) {
   req.playlistId = req.params.playlistId;
   next()
 }, favorites)
-
-
 
 module.exports = router;
