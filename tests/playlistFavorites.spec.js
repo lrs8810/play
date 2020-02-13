@@ -176,7 +176,7 @@ describe('Test the delete playlist endpoint', () => {
 
       expect(res.statusCode).toEqual(404);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Could not find favorite with id 789");
+      expect(res.body.error).toBe("Could not find favorite with id 789. Please make sure the id is an integer and greater than 0.");
     });
 
     it('sad path, will return 404 if playlist ID is not found', async () => {
@@ -185,7 +185,7 @@ describe('Test the delete playlist endpoint', () => {
 
       expect(res.statusCode).toEqual(404);
       expect(res.body).toHaveProperty("error");
-      expect(res.body.error).toBe("Could not find playlist with id 789");
+      expect(res.body.error).toBe("Could not find playlist with id 789. Please make sure the id is an integer and greater than 0.");
     });
   });
 });

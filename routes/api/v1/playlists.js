@@ -123,12 +123,12 @@ router.delete('/:playlistId/favorites/:favoriteId', (request, response) => {
   database('playlists_favorites').where({playlist_id: playlistId})
   .then(playlists => {
     if (playlists.length === 0) {
-      response.status(404).json({error: `Could not find playlist with id ${playlistId}`})
+      response.status(404).json({error: `Could not find playlist with id ${playlistId}. Please make sure the id is an integer and greater than 0.`})
     } else {
       database('playlists_favorites').where({favorite_id: favoriteId})
       .then(favorites => {
         if (favorites.length === 0) {
-          response.status(404).json({error: `Could not find favorite with id ${favoriteId}`})
+          response.status(404).json({error: `Could not find favorite with id ${favoriteId}. Please make sure the id is an integer and greater than 0.`})
         } else {
             database('playlists_favorites').where({playlist_id: playlistId, favorite_id: favoriteId}).del()
             .then(favorite => {
