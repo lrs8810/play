@@ -49,6 +49,66 @@ describe('Test it can add favorites to playlists_favorites endpoint', () => {
       expect(res.body).toHaveProperty('Success')
       expect(res.body.Success).toBe(`${favorite_1.title} has been added to ${playlist.title}!`)
     })
+    it('sad path, will return 404 if favorite ID is not found', async () => {
+      let playlist = {
+        id: 5,
+        title: 'Roadtrip'
+      }
+
+      let favorite_1 = {
+        id: 75,
+        title: "Bohemian Rhapsody",
+        artistName: "Queen",
+        genre: "Awesome Rock",
+        rating: 80
+      }
+      let favorite_2 = {
+        id: 80,
+        title: "You Shook Me All Night Long",
+        artistName: "ACDC",
+        genre: "Rock",
+        rating: 75
+      }
+      await database('playlists').insert(playlist)
+      await database('favorites').insert(favorite_1)
+      await database('favorites').insert(favorite_2)
+      const res = await request(app)
+        .post('/api/v1/playlists/5/favorites/-75')
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('error')
+      expect(res.body.error).toBe(`Could not find favorite with id -75. Please make sure the id is an integer and greater than 0.`)
+    })
+    it('sad path, will return 404 if newPlaylist ID is not found', async () => {
+      let playlist = {
+        id: 5,
+        title: 'Roadtrip'
+      }
+
+      let favorite_1 = {
+        id: 75,
+        title: "Bohemian Rhapsody",
+        artistName: "Queen",
+        genre: "Awesome Rock",
+        rating: 80
+      }
+      let favorite_2 = {
+        id: 80,
+        title: "You Shook Me All Night Long",
+        artistName: "ACDC",
+        genre: "Rock",
+        rating: 75
+      }
+      await database('playlists').insert(playlist)
+      await database('favorites').insert(favorite_1)
+      await database('favorites').insert(favorite_2)
+      const res = await request(app)
+        .post('/api/v1/playlists/-5/favorites/75')
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('error')
+      expect(res.body.error).toBe(`Could not find playlist with id -5. Please make sure the id is an integer and greater than 0.`)
+    })
   })
 })
 
