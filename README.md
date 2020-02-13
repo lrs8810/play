@@ -40,11 +40,18 @@ The domain for this Express API is `https://play-express.herokuapp.com/`<br>
 All endpoints are public and do not require an API key. <br>
 Below is a list of all available endpoints by resource. Click on the link for instructions on what needs to be sent in the request and examples of successful responses.
 
-###### Favorite resources:
-- [Add a favorite song](####add-a-favorite-song)
-- [Show all favorites](####show-all-favorites)
-- [Show a specific favorite](####show-a-specific-favorite)
-- [Delete a specific favorite](####delete-a-specific-favorite)
+###### Favorites endpoints:
+- [Add a favorite song](#add-a-favorite-song)
+- [Show all favorites](#show-all-favorites)
+- [Show a specific favorite](#show-a-specific-favorite)
+- [Delete a specific favorite](#delete-a-specific-favorite)
+
+###### Playlists endpoints:
+- [Add a playlist](####add-a-playlist)
+- [Show all playlists](####show-all-playlists)
+- [Update a specific playlist](####show-all-playlists)
+- [Delete a specific playlist](####show-all-playlists)
+
 
 #### Add a favorite song
 ###### Request
@@ -126,6 +133,87 @@ Status code: 200
 Send the favorite ID as a parameter. Only integers greater than 0 are acceptable.
 ```
 DELETE /api/v1/favorites/:id
+```
+###### Successful Response
+```
+Status code: 204
+```
+
+#### Add a playlist
+###### Request
+```
+POST /api/v1/playlists
+```
+Send the `title` in the body of the request as shown below. Only unique `titles` will be added.
+```
+{ title: "Cleaning House" }
+```
+###### Successful Response
+```
+Status code: 201
+
+{
+  "id": 1,
+  "title": "Cleaning House",
+  "createdAt": 2019-11-26T16:03:43+00:00,
+  "updatedAt": 2019-11-26T16:03:43+00:00,
+}
+```
+
+#### Show all playlists
+###### Request
+```
+GET /api/v1/playlists
+```
+###### Successful Response
+If there are playlists saved in the database you can expect to receive a similar response.
+```
+Status code: 200
+
+[
+  {
+    "id": 1,
+    "title": "Cleaning House",
+    "createdAt": 2019-11-26T16:03:43+00:00,
+    "updatedAt": 2019-11-26T16:03:43+00:00
+  },
+  {
+    "id": 2,
+    "title": "Running Mix",
+    "createdAt": 2019-11-26T16:03:43+00:00,
+    "updatedAt": 2019-11-26T16:03:43+00:00
+  },
+]
+```
+If there are no playlists saved in the database you can expect to receive an empty array.
+```
+Status code: 200
+
+[]
+```
+#### Update a specific playlist
+###### Request
+Send the playlist ID as a parameter. Only integers greater than 0 are acceptable.
+```
+PUT /api/v1/playlists/:id
+```
+###### Successful Response
+```
+Status code: 200
+
+{
+  "id": 2,
+  "title": "Marathon Running Mix",
+  "createdAt": 2019-11-26T16:03:43+00:00,
+  "updatedAt": 2019-11-26T16:03:43+00:00
+}
+```
+
+#### Delete a specific playlist
+###### Request
+Send the playlist ID as a parameter. Only integers greater than 0 are acceptable.
+```
+DELETE /api/v1/playlists/:id
 ```
 ###### Successful Response
 ```
