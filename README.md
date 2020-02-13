@@ -26,6 +26,13 @@ Once you have your migrations setup, you'll need to seed your database. You can 
 
 `knex seed:run`
 
+#### How to run tests
+Testing is setup using Jest, which can be configured in the `package.json` file and run using the commands:
+
+`knex migrate:latest --env test`
+
+`npm test`
+
 #### API Keys
 
 To get started with the API calls you will need an API key for both [Musixmatch API](https://developer.musixmatch.com/).
@@ -33,6 +40,14 @@ To get started with the API calls you will need an API key for both [Musixmatch 
 This project also utilizes [Dotenv](https://github.com/motdotla/dotenv) for storing those keys so you simply need to create a `.env` file in your root directory and add your API keys using the syntax:
 
 `MUSIXMATCH_API_KEY=<YOUR-API-KEY>`
+
+#### Database Schema
+This project's database is set up with three tables.
+- Favorites: will take a `title`, `artistName`, `genre` and `rating`
+- Playlists: will take a `title`
+- Playlists_favorites: will set up a many to many relationship between Favorites and Playlists using the `favorite_id` and `playlist_id`
+
+![](https://i.imgur.com/WAmIwhM.png)
 
 
 ## Endpoints
