@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Play is an Express API which allows users to hit four endpoints. Those endpoints include adding favorite songs, listing all favorited songs, finding a specific favorite and deleting a favorited song.
+Play is an Express API which allows users to hit eleven endpoints. Those endpoints include adding favorite songs, listing all favorited songs, finding a specific favorite and deleting a favorited song.
 
 ## Getting Started
 
@@ -62,10 +62,13 @@ Below is a list of all available endpoints by resource. Click on the link for in
 - [Delete a specific favorite](#delete-a-specific-favorite)
 
 ###### Playlists endpoints:
-- [Add a playlist](####add-a-playlist)
-- [Show all playlists](####show-all-playlists)
-- [Update a specific playlist](####show-all-playlists)
-- [Delete a specific playlist](####show-all-playlists)
+- [Add a playlist](#add-a-playlist)
+- [Show all playlists](#show-all-playlists)
+- [Update a specific playlist](#show-all-playlists)
+- [Delete a specific playlist](#show-all-playlists)
+- [Add a favorite to a specific playlist](#add-a-favorite-to-a-specific-playlist)
+- [Show all favorites related to a specific playlist](#show-all-favorites-related-to-a-specific-playlist)
+- [Delete a favorite from a specific playlist](#delete-a-favorite-from-a-specifc-playlist)
 
 
 #### Add a favorite song
@@ -189,14 +192,35 @@ Status code: 200
   {
     "id": 1,
     "title": "Cleaning House",
-    "createdAt": 2019-11-26T16:03:43+00:00,
-    "updatedAt": 2019-11-26T16:03:43+00:00
+    "songCount": 2,
+    "songAvgRating": 27.5,
+    "favorites": [
+                    {
+                      "id": 1,
+                      "title": "We Will Rock You",
+                      "artistName": "Queen"
+                      "genre": "Rock",
+                      "rating": 25
+                    },
+                    {
+                      "id": 4,
+                      "title": "Back In Black",
+                      "artistName": "AC/DC"
+                      "genre": "Rock",
+                      "rating": 30
+                    }
+                  ],
+    "createdAt": "2019-11-26T16:03:43+00:00",
+    "updatedAt": "2019-11-26T16:03:43+00:00"
   },
   {
     "id": 2,
     "title": "Running Mix",
-    "createdAt": 2019-11-26T16:03:43+00:00,
-    "updatedAt": 2019-11-26T16:03:43+00:00
+    "songCount": 0,
+    "songAvgRating": 0,
+    "favorites": []
+    "createdAt": "2019-11-26T16:03:43+00:00",
+    "updatedAt": "2019-11-26T16:03:43+00:00"
   },
 ]
 ```
@@ -234,6 +258,64 @@ DELETE /api/v1/playlists/:id
 ```
 Status code: 204
 ```
+#### Add a favorite to a specific playlist
+###### Request
+Send the playlist ID and favorite ID as parameters. Only integers greater than 0 are acceptable.
+```
+ POST /api/v1/playlists/:id/favorites/:id
+```
+###### Successful Response
+```
+Status code: 201
+
+{  "Success": "{Song Title} has been added to {Playlist Title}!" }
+```
+#### Show all favorites related to a specific playlist
+###### Request
+Send the playlist ID as a parameter. Only integers greater than 0 are acceptable.
+```
+ GET /api/v1/playlists/:id/favorites
+```
+###### Successful Response
+```
+Status code: 200
+
+{
+  "id": 1,
+  "title": "Cleaning House",
+  "songCount": 2,
+  "songAvgRating": 27.5,
+  "favorites" : [
+                  {
+                    "id": 1,
+                    "title": "We Will Rock You",
+                    "artistName": "Queen"
+                    "genre": "Rock",
+                    "rating": 25
+                  },
+                  {
+                    "id": 4,
+                    "title": "Back In Black",
+                    "artistName": "AC/DC"
+                    "genre": "Rock",
+                    "rating": 30
+                  }
+               ],
+    "createdAt": "2019-11-26T16:03:43+00:00",
+    "updatedAt": "2019-11-26T16:03:43+00:00"
+}
+```
+#### Delete a favorite from a specific playlist
+###### Request
+Send the playlist ID and favorite ID as parameters. Only integers greater than 0 are acceptable.
+```
+DELETE /api/v1/playlists/:id/favorites/:id
+```
+###### Successful Response
+```
+Status code: 204
+```
+
 
 ## Tech Stack
 
