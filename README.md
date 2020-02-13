@@ -97,7 +97,6 @@ Status code: 201
 ###### Request
 ```
 GET /api/v1/favorites
-
 ```
 ###### Successful Response
 If there are favorites saved in the database you can expect to receive a similar response.
