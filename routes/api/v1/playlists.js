@@ -119,13 +119,34 @@ router.get('/:playlistId/favorites', (req, res) => {
 router.delete('/:playlistId/favorites/:favoriteId', (request, response) => {
   let playlistId = request.params.playlistId
   let favoriteId = request.params.favoriteId
-  database('playlists_favorites').where({playlist_id: playlistId, favorite_id: favoriteId}).del()
-  .then(favorite => {
-    if (favorite > 0) {
-      response.status(204).send();
-    }
+
+  database('playlists_favorites').where({playlist_id: playlistId})
+  .then(playlists => {
+    if (playlists.length === 0) {
+      response.status(404).json({error: `Could not find playlist with id ${playlistId}`})
+    } else {
+      database('playlists_favorites').where({favorite_id: favoriteId})
+      .then(favorites => {
+        if (favorites.length === 0) {
+          response.status(404).json({error: `Could not find favorite with id ${favoriteId}`})
+        } else {
+            database('playlists_favorites').where({playlist_id: playlistId, favorite_id: favoriteId}).del()
+            .then(favorite => {
+              if (favorite > 0) {
+                response.status(204).send();
+              }
+            })
+            .catch(error =>  {
+              console.log(error)
+              response.status(500).send();
+            })
+          }
+        })
+      }
+    })
   })
-});
+
+
 
 router.use('/:playlistId/favorites', function(req, res, next) {
   req.playlistId = req.params.playlistId;
