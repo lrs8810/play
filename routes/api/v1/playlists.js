@@ -9,10 +9,29 @@ const database = require('knex')(configuration);
 
 
 router.get('/', (request, response) => {
-  database('playlists').select()
-    .then(playlists => {
-      response.status(200).json(playlists)
-    }).catch(error => response.status(404).json({error: error}))
+  return database('playlists').select()
+     .then(playlists => {
+         const promises = playlists.map( playlist => {
+             return database('playlists_favorites')
+                 .join('favorites', 'favorites.id', 'playlists_favorites.favorite_id')
+                 .select("favorites.id", "favorites.title", "favorites.artistName", "favorites.genre", "favorites.rating")
+                 .where('playlist_id', playlist.id)
+                 .then(favorites => {
+                   playlist.songAvgRating = calculateSongAvgRating(favorites)
+                   playlist.songCount = favorites.length
+                   playlist.favorites = favorites
+                   return playlist
+                 })
+         })
+         Promise.all(promises)
+          .then(result => {
+            response.status(200).json(result)
+          })
+      })
+      .catch(error => {
+        console.log(error)
+        response.status(500).send()
+      })
 });
 
 router.post('/', (request, response) => {
