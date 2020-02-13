@@ -116,6 +116,17 @@ router.get('/:playlistId/favorites', (req, res) => {
          });
 })
 
+router.delete('/:playlistId/favorites/:favoriteId', (request, response) => {
+  let playlistId = request.params.playlistId
+  let favoriteId = request.params.favoriteId
+  database('playlists_favorites').where({playlist_id: playlistId, favorite_id: favoriteId}).del()
+  .then(favorite => {
+    if (favorite > 0) {
+      response.status(204).send();
+    }
+  })
+});
+
 router.use('/:playlistId/favorites', function(req, res, next) {
   req.playlistId = req.params.playlistId;
   next()

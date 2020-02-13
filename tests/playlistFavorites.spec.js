@@ -122,3 +122,48 @@ describe('Test it can get all favorites for a playlist with playlists_favorites 
     })
   })
 })
+
+describe('Test the delete playlist endpoint', () => {
+  beforeEach(async () => {
+    await database.raw('truncate table playlists cascade');
+
+    let playlist = {
+      id: 1,
+      title: 'Roadtrip!!'
+    };
+    let favorite_1 = {
+      id: 45,
+      title: "Bohemian Rhapsody",
+      artistName: "Queen",
+      genre: "Awesome Rock",
+      rating: 80
+    };
+    let favorite_2 = {
+      id: 49,
+      title: "You Shook Me All Night Long",
+      artistName: "ACDC",
+      genre: "Rock",
+      rating: 75
+    }
+    let playlistFavorite_1 = {
+      playlist_id: 1,
+      favorite_id: 45
+    }
+    await database('playlists').insert(playlist);
+    await database('favorites').insert(favorite_1);
+    await database('favorites').insert(favorite_2);
+    await database('playlists_favorites').insert(playlistFavorite_1);
+  });
+
+  afterEach(() => {
+    database.raw('truncate table playlists cascade');
+  });
+
+  describe('DELETE /api/v1/playlists/:id/favorites/:id', () => {
+    it('happy path', async () => {
+      const res = await request(app)
+        .delete("/api/v1/playlists/1/favorites/45")
+        expect(res.statusCode).toEqual(204);
+    });
+  });
+});
