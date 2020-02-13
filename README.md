@@ -36,39 +36,100 @@ This project also utilizes [Dotenv](https://github.com/motdotla/dotenv) for stor
 
 
 ## Endpoints
+The domain for this Express API is `https://play-express.herokuapp.com/`<br>
+All endpoints are public and do not require an API key. <br>
+Below is a list of all available endpoints by resource. Click on the link for instructions on what needs to be sent in the request and examples of successful responses.
 
-Add a favorite song:
+###### Favorite resources:
+- [Add a favorite song](####add-a-favorite-song)
+- [Show all favorites](####show-all-favorites)
+- [Show a specific favorite](####show-a-specific-favorite)
+- [Delete a specific favorite](####delete-a-specific-favorite)
 
+#### Add a favorite song
+###### Request
 ```
-Post /api/v1/favorites
-
-Body:
+POST /api/v1/favorites
+```
+Send the `title` and `artistName` in the body of the request as shown below.
+```
+{ title: "We Will Rock You",artistName: "Queen" }
+```
+###### Successful Response
+```
+Status code: 201
 
 {
- title: "We Will Rock You",
- artistName: "Queen"
+  "id": 1,
+  "title": "We Will Rock You",
+  "artistName": "Queen"
+  "genre": "Rock",
+  "rating": 88
 }
 ```
 
-Listing all favorites:
-
+#### Show all favorites
+###### Request
 ```
 GET /api/v1/favorites
 
 ```
+###### Successful Response
+If there are favorites saved in the database you can expect to receive a similar response.
+```
+Status code: 200
 
-List a specific favorite:
+[
+  {
+    "id": 1,
+    "title": "We Will Rock You",
+    "artistName": "Queen"
+    "genre": "Rock",
+    "rating": 88
+  },
+  {
+    "id": 2,
+    "title": "Careless Whisper",
+    "artistName": "George Michael"
+    "genre": "Pop",
+    "rating": 93
+  },
+]
+```
+If there are no favorites saved in the database you can expect to receive an empty array.
+```
+Status code: 200
 
+[]
+```
+#### Show a specific favorite
+###### Request
+Send the favorite ID as a parameter. Only integers greater than 0 are acceptable.
 ```
 GET /api/v1/favorites/:id
+```
+###### Successful Response
+```
+Status code: 200
 
+{
+  "id": 1,
+  "title": "We Will Rock You",
+  "artistName": "Queen"
+  "genre": "Rock",
+  "rating": 88
+}
 ```
 
-Deleting an existing favorite:
-
+#### Delete a specific favorite
+###### Request
+Send the favorite ID as a parameter. Only integers greater than 0 are acceptable.
 ```
 DELETE /api/v1/favorites/:id
-
+```
+###### Successful Response
+```
+Status code: 204
 ```
 
 ## Tech Stack
