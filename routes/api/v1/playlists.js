@@ -84,10 +84,43 @@ router.delete('/:id', (request, response) => {
   });
 })
 
+router.get('/:playlistId/favorites', (req, res) => {
+  var playlistId = req.params.playlistId;
+  return database('playlists')
+       .then(playlists => {
+           const promises = playlists.map(playlist => {
+               return database('playlists_favorites')
+                   .join('favorites', 'favorites.id', 'playlists_favorites.favorite_id')
+                   .select("favorites.id", "favorites.title", "favorites.artistName", "favorites.genre", "favorites.rating")
+                   .where('playlist_id', playlist.id)
+                   .then(favorites => {
+                       playlist.favorites = favorites
+                       playlist.songCount = favorites.length
+                       return playlist
+                   })
+           })
+           Promise.all(promises)
+           .then(result => {
+             database("playlists_favorites")
+               .join('favorites', 'favorites.id', 'playlists_favorites.favorite_id')
+               .where('playlist_id', playlistId)
+               .avg('favorites.rating as songAvgRating')
+               .groupBy('playlists_favorites.playlist_id')
+               .then(songRating => {
+                 var rating = parseFloat(songRating[0].songAvgRating)
+                 songRating[0].songAvgRating = rating
+                 result[0].songAvgRating = songRating[0].songAvgRating
+                 res.status(200).json(result[0])
+               })
+           })
+         });
+})
+
 router.use('/:playlistId/favorites', function(req, res, next) {
   req.playlistId = req.params.playlistId;
   next()
 }, favorites)
+
 
 
 module.exports = router;
