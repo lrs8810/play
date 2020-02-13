@@ -50,21 +50,25 @@ router.get('/', (request, response) => {
 
 router.get('/:id', (request, response) => {
   let id = request.params.id
-  database('favorites').where('id', id)
-  .select('id', 'title', 'artistName', 'genre', 'rating')
-  .then(favorite => {
-    if (favorite.length) {
-      response.status(200).json(favorite[0]);
-    } else {
-      response.status(404).json({
-        error: `Could not find favorite with id ${id}`
-      });
-    }
-  })
-  .catch(error => {
-    console.log(error)
-    response.status(500).send();
-  });
+  if (isNaN(id)) {
+    response.status(404).json({ error: 'Please send in a parameter that is an integer and greater than 0' })
+  } else {
+    database('favorites').where('id', id)
+    .select('id', 'title', 'artistName', 'genre', 'rating')
+    .then(favorite => {
+      if (favorite.length) {
+        response.status(200).json(favorite[0]);
+      } else {
+        response.status(404).json({
+          error: `Could not find favorite with id ${id}`
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(500).send();
+    });
+  }
 })
 
 router.delete('/:id', (request, response) => {
