@@ -126,6 +126,8 @@ describe('Test it can get all favorites for a playlist with playlists_favorites 
 describe('Test the delete playlist endpoint', () => {
   beforeEach(async () => {
     await database.raw('truncate table playlists cascade');
+    await database.raw('truncate table playlists_favorites cascade');
+    await database.raw('truncate table favorites cascade');
 
     let playlist = {
       id: 1,
@@ -157,6 +159,8 @@ describe('Test the delete playlist endpoint', () => {
 
   afterEach(() => {
     database.raw('truncate table playlists cascade');
+    database.raw('truncate table playlists_favorites cascade');
+    database.raw('truncate table favorites cascade');
   });
 
   describe('DELETE /api/v1/playlists/:id/favorites/:id', () => {
@@ -164,6 +168,24 @@ describe('Test the delete playlist endpoint', () => {
       const res = await request(app)
         .delete("/api/v1/playlists/1/favorites/45")
         expect(res.statusCode).toEqual(204);
+    });
+
+    it('sad path, will return 404 if favorite ID is not found', async () => {
+      const res = await request(app)
+        .delete("/api/v1/playlists/1/favorites/789")
+
+      expect(res.statusCode).toEqual(404);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Could not find favorite with id 789. Please make sure the id is an integer and greater than 0.");
+    });
+
+    it('sad path, will return 404 if playlist ID is not found', async () => {
+      const res = await request(app)
+        .delete("/api/v1/playlists/789/favorites/45")
+
+      expect(res.statusCode).toEqual(404);
+      expect(res.body).toHaveProperty("error");
+      expect(res.body.error).toBe("Could not find playlist with id 789. Please make sure the id is an integer and greater than 0.");
     });
   });
 });
