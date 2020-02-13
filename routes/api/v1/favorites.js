@@ -89,11 +89,19 @@ router.post('/:favoriteId', async (req, res) => {
   var playlist = await database('playlists').where({id: req.params.playlistId}).first()
   var favorite = await database('favorites').where({id: req.params.favoriteId}).first()
 
-  database('playlists_favorites').insert({playlist_id: req.params.playlistId, favorite_id: req.params.favoriteId}, "id")
+  if (playlist === undefined) {
+    res.status(404).json({ error: `Could not find playlist with id ${req.params.playlistId}. Please make sure the id is an integer and greater than 0.` })
+  } else if (favorite === undefined) {
+    res.status(404).json({ error: `Could not find favorite with id ${req.params.favoriteId}. Please make sure the id is an integer and greater than 0.` })
+  } else {
+    database('playlists_favorites').insert({playlist_id: req.params.playlistId, favorite_id: req.params.favoriteId}, "id")
     .then(newFavorite => {
       res.status(201).json({Success: `${favorite.title} has been added to ${playlist.title}!`})
-    });
+    })
+    .catch(error => {
+      res.status(400).json({ error: 'Unable to add favorite to playlist.'})
+    })
+  }
 });
-
 
 module.exports = router;
