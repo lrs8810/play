@@ -68,7 +68,7 @@ Status code: 201
 }
 ```
 
-#### Show all favorites:
+#### Show all favorites
 ###### Request
 ```
 GET /api/v1/favorites
