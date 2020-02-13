@@ -126,6 +126,8 @@ describe('Test it can get all favorites for a playlist with playlists_favorites 
 describe('Test the delete playlist endpoint', () => {
   beforeEach(async () => {
     await database.raw('truncate table playlists cascade');
+    await database.raw('truncate table playlists_favorites cascade');
+    await database.raw('truncate table favorites cascade');
 
     let playlist = {
       id: 1,
@@ -157,6 +159,8 @@ describe('Test the delete playlist endpoint', () => {
 
   afterEach(() => {
     database.raw('truncate table playlists cascade');
+    database.raw('truncate table playlists_favorites cascade');
+    database.raw('truncate table favorites cascade');
   });
 
   describe('DELETE /api/v1/playlists/:id/favorites/:id', () => {
